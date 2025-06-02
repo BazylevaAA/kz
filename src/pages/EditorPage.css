@@ -1,0 +1,55 @@
+.editor-page {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.save-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.save-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.editor-tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.tab-button {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-right: 5px;
+}
+
+.tab-button.active {
+  border-bottom-color: #4CAF50;
+  font-weight: bold;
+}
+
+.editor-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}

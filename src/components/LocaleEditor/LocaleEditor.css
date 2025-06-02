@@ -1,0 +1,31 @@
+.locale-editor {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.locale-controls {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  flex-grow: 1;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.loading-indicator {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.no-results {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+}

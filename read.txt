@@ -1,0 +1,174 @@
+FileUploader:
+Принимает KZB файлы
+Валидация формата
+Прогресс загрузки
+Кнопка "Загрузить"
+
+LocaleEditor:
+Таблица с колонками:
+ID строки (неизменяемое)
+Оригинальное значение (неизменяемое)
+Новое значение (редактируемое поле)
+Поиск/фильтрация по ID
+Пагинация (если строк много)
+
+ImageEditor:
+Сетка или список превью изображений
+Для каждой картинки:
+Превью (с возможностью увеличения)
+Кнопка "Скачать"
+Кнопка "Заменить" (открывает файловый диалог)
+Индикатор изменений (например, цветная рамка)
+
+EditorPage:
+Объединяет LocaleEditor и ImageEditor
+Кнопка "Сохранить изменения"
+Возможность скачать модифицированный KZB
+
+App.jsx:
+Настроен базовый роутинг для приложения
+Чистая и минималистичная структура
+
+App.css:
+Глобальные стили для всего приложения
+Сброс стандартных стилей браузера
+Утилитарные классы для повторного использования
+Анимации (например, для спиннера загрузки)
+
+index.js:
+Стандартная точка входа для React-приложения
+Подключен StrictMode для выявления потенциальных проблем
+
+FileUploader.jsx:
+Поддержка drag-and-drop загрузки файлов
+Валидация по типу файла
+Отображение информации о выбранном файле
+Состояние загрузки с индикатором
+Доступность (правильное использование label)
+
+FileUploader.css:
+Визуальная обратная связь при перетаскивании
+Адаптивный дизайн
+Плавные переходы и анимации
+Стилизованный спиннер загрузки
+
+
+
+
+
+Что нужно изменить для реального парсинга:
+1. Backend-часть (ваш KZBParser):
+Нужен API для:
+Загрузки KZB → разбор архива → возврат структуры
+Пример роута:
+bash
+POST /api/parse-kzb
+Body: FormData (файл)
+Response: { locales: [...], images: [...] }
+
+2. Frontend-адаптация:
+A. FileUploader.jsx — отправка файла на бекенд:
+jsx
+const handleUpload = async (file) => {
+  setIsLoading(true);
+  const formData = new FormData();
+  formData.append('kzbFile', file);
+
+  try {
+    const response = await fetch('/api/parse-kzb', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await response.json();
+    onUpload(data); // Передаём распарсенные данные в EditorPage
+  } catch (error) {
+    console.error('Upload failed:', error);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+B. EditorPage.jsx — получение данных:
+jsx
+function EditorPage() {
+  const [parsedData, setParsedData] = useState(null);
+
+  // Получаем данные из FileUploader
+  const handleParsedData = (data) => {
+    setParsedData(data);
+  };
+
+  return (
+    <>
+      {!parsedData ? (
+        <FileUploader onUpload={handleParsedData} />
+      ) : (
+        <>
+          <LocaleEditor locales={parsedData.locales} />
+          <ImageEditor images={parsedData.images} />
+        </>
+      )}
+    </>
+  );
+}
+
+C. Парсинг локалей (пример для API):
+python
+# Python-пример (ваш KZBParser)
+def parse_locale(file_content):
+    entries = []
+    for line in file_content.decode('utf-8').split('\n'):
+        if '|' in line:
+            id_part, _, text = line.partition('|')
+            entries.append({
+                'id': id_part.strip(),
+                'original': text.strip(),
+                'newValue': '',
+                'modified': False
+            })
+    return entries
+
+Как должны выглядеть реальные данные:
+Ответ API после парсинга:
+json
+{
+  "locales": [
+    {
+      "id": "TC_FuelEnd",
+      "original": "燃油补电结束",
+      "newValue": "",
+      "modified": false
+    }
+  ],
+  "images": [
+    {
+      "name": "icon.png",
+      "path": "temp/icon_123.png",
+      "modified": false
+    }
+  ]
+}
+
+Что нужно допилить:
+API для парсинга:
+Эндпоинт для загрузки KZB
+Распаковка архива на сервере
+Парсинг Locales и извлечение изображений
+
+Frontend:
+Отправка файла → получение структуры
+Сохранение изменений (отправка модифицированных данных на сервер)
+
+Сборка нового KZB:
+API-метод для компиляции изменений обратно в KZB
+Если хотите протестировать на реальных данных:
+Создайте временный JSON-файл с примерами ваших KZB-данных
+
+Импортируйте его в LocaleEditor:
+jsx
+import realData from './test-kzb-data.json';
+
+function LocaleEditor() {
+  const [locales, setLocales] = useState(realData.locales);
+  // ...
+}
